@@ -17,6 +17,7 @@ public class MainManager : MonoBehaviour
     private int m_Points;
     
     private bool m_GameOver = false;
+    public Text BestScoreText;
 
     
     // Start is called before the first frame update
@@ -36,6 +37,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        SetScores();
     }
 
     private void Update()
@@ -62,6 +65,17 @@ public class MainManager : MonoBehaviour
         }
     }
 
+    internal void SetScores()
+    {
+        var gm = GameManager.instance;
+
+        if(gm.bestScoreValue > 0){
+            BestScoreText.text = "Best score : " + gm.bestScoreUser + " - " + gm.bestScoreValue;
+        }else{
+            BestScoreText.text = "";
+        }
+    }
+
     void AddPoint(int point)
     {
         m_Points += point;
@@ -71,6 +85,17 @@ public class MainManager : MonoBehaviour
     public void GameOver()
     {
         m_GameOver = true;
+        
+        bool newHighScore = GameManager.instance.UpdateScores( m_Points );
+
+        if(newHighScore){
+            GameOverText.GetComponent<Text>().text ="NEW HIGHSCORE !";
+        }else{
+            GameOverText.GetComponent<Text>().text ="GAMEOVER :(";
+        }
+
         GameOverText.SetActive(true);
+        
+        SetScores();
     }
 }
